@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AVFoundation
 
 class ViewController: UIViewController {
     
@@ -21,6 +22,9 @@ class ViewController: UIViewController {
     var timer = Timer()
     
     var eggState = ""
+    
+    var player: AVAudioPlayer?
+
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -49,9 +53,32 @@ class ViewController: UIViewController {
         progressView.progress = Float(Double(seconds)/Double(stopTime))
         
         if seconds == stopTime {
-            timer.invalidate()
-            seconds = 0
-            titleEggTimer.text = "Egg is done (\(eggState))"
+            eggIsDone()
+        }
+    }
+    
+    
+    func eggIsDone() {
+        timer.invalidate()
+        seconds = 0
+        titleEggTimer.text = "Egg is done (\(eggState))"
+        
+        playSound(sondName: "alarm_sound")
+        
+    }
+    
+    func playSound(sondName: String) {
+        guard let url = Bundle.main.url(forResource: sondName, withExtension: "mp3") else { return }
+
+        do {
+            player = try AVAudioPlayer(contentsOf: url, fileTypeHint: AVFileType.wav.rawValue)
+            
+            guard let player = player else { return }
+
+            player.play()
+
+        } catch let error {
+            print(error.localizedDescription)
         }
     }
     
